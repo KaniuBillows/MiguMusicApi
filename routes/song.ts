@@ -95,13 +95,15 @@ module.exports = {
         return res.redirect(result.data.url);
       }
       return res.send({
-        result: 100,
-        data: result.data.url,
+        code: 200,
+        content: result.data.url,
+        message: 'success'
       });
     } else {
       return res.send({
-        result: 200,
-        data: result.info,
+        code: 200,
+        content: result.info,
+        message: 'success'
       })
     }
   },

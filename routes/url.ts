@@ -30,7 +30,7 @@ module.exports = {
                 uid: 1234,
             }
         });
-
+        console.log(result);
         if (result.code === '000000') {
             if (Number(isRedirect)) {
                 return res.redirect(result.data.url);

@@ -11,7 +11,6 @@ module.exports = {
         content: null
       })
     }
-    console.log(id);
     const settings = {
       method: 'get',
       url: `http://music.migu.cn/v3/api/music/audioPlayer/getLyric?copyrightId=${id}`,
