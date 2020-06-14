@@ -9,9 +9,14 @@ import cheerio = require("cheerio");
 import { request } from './util/request';
 import * as StringHelper from './util/StringHelper';
 import SongUrlSaver from './util/SongUrl';
-
+import consul = require('consul');
+const uuid = require('node-uuid');
 const app = express();
 const UrlSaver = new SongUrlSaver();
+const Consul = new consul(
+  { host: '172.17.0.2', port: 8500, promisify: true }
+);
+
 
 setInterval(() => UrlSaver.write(), 3600000 * 3);
 
@@ -66,12 +71,28 @@ fs.readdirSync(path.join(__dirname, 'routes')).reverse().forEach(file => {
 app.use('/', require('./routes/index'));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
+});
+let id = "service:" + uuid.v1();
+Consul.agent.service.deregister(
+  id, (err) => {
+    if (err) throw err;
+  }
+);
+Consul.agent.service.register({
+  name: "Migu API", address: '172.17.0.7', port: 3500, id: id,
+  check: {
+    http: 'http://172.17.0.7:3500/health', interval: '10s', timeout: '5s',
+    deregisterCriticalServiceAfter: '60s'
+  }
+}, function (err, result) {
+  if (err) { console.error(err); throw err; }
+  console.log("MiguAPI" + ' 注册成功！');
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
