@@ -14,7 +14,7 @@ const uuid = require('node-uuid');
 const app = express();
 const UrlSaver = new SongUrlSaver();
 const Consul = new consul(
-  { host: '172.17.0.2', port: 8500, promisify: true }
+  { host: '172.18.0.2', port: 8500, promisify: true }
 );
 
 
@@ -80,17 +80,17 @@ Consul.agent.service.deregister(
     if (err) throw err;
   }
 );
-Consul.agent.service.register({
-  name: "Migu API", address: '172.17.0.7', port: 3500, id: id,
-  check: {
-    http: 'http://172.17.0.7:3500/health', interval: '10s', timeout: '5s',
-    deregisterCriticalServiceAfter: '60s'
-  }
-}, function (err, result) {
-  if (err) { console.error(err); throw err; }
-  console.log("MiguAPI" + ' 注册成功！');
-});
 
+  Consul.agent.service.register({
+    name: "Migu API", address: '172.18.0.8', port: 3500, id: id,
+    check: {
+      http: 'http://172.18.0.8:3500/health', interval: '10s', timeout: '5s',
+      deregisterCriticalServiceAfter: '60s'
+    }
+  }, function (err, result) {
+    if (err) { console.error(err); }
+    console.log("MiguAPI" + ' 注册成功！');
+  });
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
