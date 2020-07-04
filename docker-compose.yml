@@ -2,13 +2,14 @@ version: '2'
 
 services: 
     migu-api:
-        image: "migu-api:latest"
+        image: migu-api:latest
         build: ./
         
         ports: 
             - "3500:3500"
         networks: 
             - mynet
+        container_name: "migu-api"
 networks: 
     mynet:
         external: true
